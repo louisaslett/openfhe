@@ -1,6 +1,6 @@
 diff -ruN a/src/vendor/binfhe/lib/lwe-pke.cpp b/src/vendor/binfhe/lib/lwe-pke.cpp
 --- a/src/vendor/binfhe/lib/lwe-pke.cpp	2026-07-20 13:18:27
-+++ b/src/vendor/binfhe/lib/lwe-pke.cpp	2026-07-20 15:33:48
++++ b/src/vendor/binfhe/lib/lwe-pke.cpp	2026-07-20 15:52:48
 @@ -1,3 +1,4 @@
 +#include "r_shim/r_stream.h"  // openfhe R package patch
  //==================================================================================
@@ -15,9 +15,23 @@ diff -ruN a/src/vendor/binfhe/lib/lwe-pke.cpp b/src/vendor/binfhe/lib/lwe-pke.cp
  #endif
  }
  
+diff -ruN a/src/vendor/cereal/include/cereal/archives/json.hpp b/src/vendor/cereal/include/cereal/archives/json.hpp
+--- a/src/vendor/cereal/include/cereal/archives/json.hpp	2026-07-20 15:52:46
++++ b/src/vendor/cereal/include/cereal/archives/json.hpp	2026-07-20 15:52:48
+@@ -112,10 +112,8 @@
+       // the version of gcc that it claims full compatibility with.
+       #if defined(__GNUC__) && !defined(__clang__)
+           #pragma GCC diagnostic push
+-          #pragma GCC diagnostic ignored "-Wpedantic"
+       #elif defined __clang__
+           #pragma clang diagnostic push
+-          #pragma clang diagnostic ignored "-Wpedantic"
+       #endif
+ 
+       using int128 = __int128;
 diff -ruN a/src/vendor/cereal/include/cereal/archives/xml.hpp b/src/vendor/cereal/include/cereal/archives/xml.hpp
---- a/src/vendor/cereal/include/cereal/archives/xml.hpp	2026-07-20 15:33:45
-+++ b/src/vendor/cereal/include/cereal/archives/xml.hpp	2026-07-20 15:33:48
+--- a/src/vendor/cereal/include/cereal/archives/xml.hpp	2026-07-20 15:52:46
++++ b/src/vendor/cereal/include/cereal/archives/xml.hpp	2026-07-20 15:52:48
 @@ -1,3 +1,4 @@
 +#include "r_shim/r_stream.h"  // openfhe R package patch
  /*! \file xml.hpp
@@ -42,9 +56,20 @@ diff -ruN a/src/vendor/cereal/include/cereal/archives/xml.hpp b/src/vendor/cerea
            throw Exception("XML Parsing failed - likely due to invalid characters or invalid naming");
          }
  
+diff -ruN a/src/vendor/cereal/include/cereal/external/base64.hpp b/src/vendor/cereal/include/cereal/external/base64.hpp
+--- a/src/vendor/cereal/include/cereal/external/base64.hpp	2026-07-20 15:52:46
++++ b/src/vendor/cereal/include/cereal/external/base64.hpp	2026-07-20 15:52:48
+@@ -27,7 +27,6 @@
+ 
+ #ifdef __GNUC__
+ #pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wconversion"
+ #endif
+ 
+ #include <string>
 diff -ruN a/src/vendor/cereal/include/cereal/external/rapidxml/rapidxml.hpp b/src/vendor/cereal/include/cereal/external/rapidxml/rapidxml.hpp
---- a/src/vendor/cereal/include/cereal/external/rapidxml/rapidxml.hpp	2026-07-20 15:33:45
-+++ b/src/vendor/cereal/include/cereal/external/rapidxml/rapidxml.hpp	2026-07-20 15:33:48
+--- a/src/vendor/cereal/include/cereal/external/rapidxml/rapidxml.hpp	2026-07-20 15:52:46
++++ b/src/vendor/cereal/include/cereal/external/rapidxml/rapidxml.hpp	2026-07-20 15:52:48
 @@ -1,3 +1,4 @@
 +#include "r_shim/r_stream.h"  // openfhe R package patch
  #ifndef CEREAL_RAPIDXML_HPP_INCLUDED
@@ -61,7 +86,7 @@ diff -ruN a/src/vendor/cereal/include/cereal/external/rapidxml/rapidxml.hpp b/sr
      //! </pre>
 diff -ruN a/src/vendor/core/include/math/hal/bigintntl/ubintntl.h b/src/vendor/core/include/math/hal/bigintntl/ubintntl.h
 --- a/src/vendor/core/include/math/hal/bigintntl/ubintntl.h	2026-07-20 13:18:27
-+++ b/src/vendor/core/include/math/hal/bigintntl/ubintntl.h	2026-07-20 15:33:48
++++ b/src/vendor/core/include/math/hal/bigintntl/ubintntl.h	2026-07-20 15:52:48
 @@ -1,3 +1,4 @@
 +#include "r_shim/r_stream.h"  // openfhe R package patch
  //==================================================================================
@@ -82,7 +107,7 @@ diff -ruN a/src/vendor/core/include/math/hal/bigintntl/ubintntl.h b/src/vendor/c
          }
 diff -ruN a/src/vendor/core/include/math/hal/intnat/mubintvecnat.h b/src/vendor/core/include/math/hal/intnat/mubintvecnat.h
 --- a/src/vendor/core/include/math/hal/intnat/mubintvecnat.h	2026-07-20 13:18:27
-+++ b/src/vendor/core/include/math/hal/intnat/mubintvecnat.h	2026-07-20 15:33:48
++++ b/src/vendor/core/include/math/hal/intnat/mubintvecnat.h	2026-07-20 15:52:48
 @@ -1,3 +1,4 @@
 +#include "r_shim/r_stream.h"  // openfhe R package patch
  //==================================================================================
@@ -113,7 +138,7 @@ diff -ruN a/src/vendor/core/include/math/hal/intnat/mubintvecnat.h b/src/vendor/
  };
 diff -ruN a/src/vendor/core/include/utils/caller_info.h b/src/vendor/core/include/utils/caller_info.h
 --- a/src/vendor/core/include/utils/caller_info.h	2026-07-20 13:18:27
-+++ b/src/vendor/core/include/utils/caller_info.h	2026-07-20 15:33:48
++++ b/src/vendor/core/include/utils/caller_info.h	2026-07-20 15:52:49
 @@ -1,3 +1,4 @@
 +#include "r_shim/r_stream.h"  // openfhe R package patch
  //==================================================================================
@@ -139,7 +164,7 @@ diff -ruN a/src/vendor/core/include/utils/caller_info.h b/src/vendor/core/includ
  
 diff -ruN a/src/vendor/core/include/utils/debug.h b/src/vendor/core/include/utils/debug.h
 --- a/src/vendor/core/include/utils/debug.h	2026-07-20 13:18:27
-+++ b/src/vendor/core/include/utils/debug.h	2026-07-20 15:33:48
++++ b/src/vendor/core/include/utils/debug.h	2026-07-20 15:52:49
 @@ -1,3 +1,4 @@
 +#include "r_shim/r_stream.h"  // openfhe R package patch
  //==================================================================================
@@ -244,9 +269,47 @@ diff -ruN a/src/vendor/core/include/utils/debug.h b/src/vendor/core/include/util
                  }                                                                                           \
              } while (0)
  
+diff -ruN a/src/vendor/core/include/utils/serial.h b/src/vendor/core/include/utils/serial.h
+--- a/src/vendor/core/include/utils/serial.h	2026-07-20 13:18:27
++++ b/src/vendor/core/include/utils/serial.h	2026-07-20 15:52:49
+@@ -51,15 +51,11 @@
+ #if defined(__GNUC__) && !defined(__clang__)
+     #if __GNUC__ >= 8
+         #pragma GCC diagnostic push
+-        #pragma GCC diagnostic ignored "-Wclass-memaccess"
+         #if __GNUC__ >= 13
+-            #pragma GCC diagnostic ignored "-Wdangling-reference"
+         #endif
+     #endif
+ #elif defined __clang__
+     #pragma clang diagnostic push
+-    #pragma clang diagnostic ignored "-Wunused-private-field"
+-    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+ #endif
+ 
+ #include "cereal/archives/portable_binary.hpp"
+diff -ruN a/src/vendor/core/include/utils/serializable.h b/src/vendor/core/include/utils/serializable.h
+--- a/src/vendor/core/include/utils/serializable.h	2026-07-20 13:18:27
++++ b/src/vendor/core/include/utils/serializable.h	2026-07-20 15:52:49
+@@ -46,15 +46,11 @@
+ #if defined(__GNUC__) && !defined(__clang__)
+     #if __GNUC__ >= 8
+         #pragma GCC diagnostic push
+-        #pragma GCC diagnostic ignored "-Wclass-memaccess"
+         #if __GNUC__ >= 13
+-            #pragma GCC diagnostic ignored "-Wdangling-reference"
+         #endif
+     #endif
+ #elif defined __clang__
+     #pragma clang diagnostic push
+-    #pragma clang diagnostic ignored "-Wunused-private-field"
+-    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+ #endif
+ 
+ #include "cereal/cereal.hpp"
 diff -ruN a/src/vendor/core/lib/math/dftransform.cpp b/src/vendor/core/lib/math/dftransform.cpp
 --- a/src/vendor/core/lib/math/dftransform.cpp	2026-07-20 13:18:27
-+++ b/src/vendor/core/lib/math/dftransform.cpp	2026-07-20 15:33:48
++++ b/src/vendor/core/lib/math/dftransform.cpp	2026-07-20 15:52:49
 @@ -1,3 +1,4 @@
 +#include "r_shim/r_stream.h"  // openfhe R package patch
  //==================================================================================
@@ -263,7 +326,7 @@ diff -ruN a/src/vendor/core/lib/math/dftransform.cpp b/src/vendor/core/lib/math/
              sinTable[l].resize(m / 2);
 diff -ruN a/src/vendor/core/lib/math/distributiongenerator.cpp b/src/vendor/core/lib/math/distributiongenerator.cpp
 --- a/src/vendor/core/lib/math/distributiongenerator.cpp	2026-07-20 13:18:27
-+++ b/src/vendor/core/lib/math/distributiongenerator.cpp	2026-07-20 15:33:48
++++ b/src/vendor/core/lib/math/distributiongenerator.cpp	2026-07-20 15:52:49
 @@ -1,3 +1,4 @@
 +#include "r_shim/r_stream.h"  // openfhe R package patch
  //==================================================================================
@@ -289,7 +352,7 @@ diff -ruN a/src/vendor/core/lib/math/distributiongenerator.cpp b/src/vendor/core
  #endif
 diff -ruN a/src/vendor/core/lib/math/hal/bigintdyn/ubintdyn.cpp b/src/vendor/core/lib/math/hal/bigintdyn/ubintdyn.cpp
 --- a/src/vendor/core/lib/math/hal/bigintdyn/ubintdyn.cpp	2026-07-20 13:18:27
-+++ b/src/vendor/core/lib/math/hal/bigintdyn/ubintdyn.cpp	2026-07-20 15:33:48
++++ b/src/vendor/core/lib/math/hal/bigintdyn/ubintdyn.cpp	2026-07-20 15:52:49
 @@ -1,3 +1,4 @@
 +#include "r_shim/r_stream.h"  // openfhe R package patch
  //==================================================================================
@@ -326,7 +389,7 @@ diff -ruN a/src/vendor/core/lib/math/hal/bigintdyn/ubintdyn.cpp b/src/vendor/cor
  
 diff -ruN a/src/vendor/core/lib/utils/blockAllocator/xallocator.cpp b/src/vendor/core/lib/utils/blockAllocator/xallocator.cpp
 --- a/src/vendor/core/lib/utils/blockAllocator/xallocator.cpp	2026-07-20 13:18:27
-+++ b/src/vendor/core/lib/utils/blockAllocator/xallocator.cpp	2026-07-20 15:33:48
++++ b/src/vendor/core/lib/utils/blockAllocator/xallocator.cpp	2026-07-20 15:52:49
 @@ -1,3 +1,4 @@
 +#include "r_shim/r_stream.h"  // openfhe R package patch
  //==================================================================================
@@ -377,7 +440,7 @@ diff -ruN a/src/vendor/core/lib/utils/blockAllocator/xallocator.cpp b/src/vendor
  }
 diff -ruN a/src/vendor/core/lib/utils/prng/blake2engine.cpp b/src/vendor/core/lib/utils/prng/blake2engine.cpp
 --- a/src/vendor/core/lib/utils/prng/blake2engine.cpp	2026-07-20 13:18:27
-+++ b/src/vendor/core/lib/utils/prng/blake2engine.cpp	2026-07-20 15:33:48
++++ b/src/vendor/core/lib/utils/prng/blake2engine.cpp	2026-07-20 15:52:49
 @@ -1,3 +1,4 @@
 +#include "r_shim/r_stream.h"  // openfhe R package patch
  //==================================================================================
@@ -394,7 +457,7 @@ diff -ruN a/src/vendor/core/lib/utils/prng/blake2engine.cpp b/src/vendor/core/li
  
 diff -ruN a/src/vendor/pke/include/cryptocontext.h b/src/vendor/pke/include/cryptocontext.h
 --- a/src/vendor/pke/include/cryptocontext.h	2026-07-20 13:18:27
-+++ b/src/vendor/pke/include/cryptocontext.h	2026-07-20 15:33:48
++++ b/src/vendor/pke/include/cryptocontext.h	2026-07-20 15:52:49
 @@ -1,3 +1,4 @@
 +#include "r_shim/r_stream.h"  // openfhe R package patch
  //==================================================================================
@@ -411,7 +474,7 @@ diff -ruN a/src/vendor/pke/include/cryptocontext.h b/src/vendor/pke/include/cryp
          this->privateKey = privateKey;
 diff -ruN a/src/vendor/pke/lib/scheme/ckksrns/ckksrns-fhe.cpp b/src/vendor/pke/lib/scheme/ckksrns/ckksrns-fhe.cpp
 --- a/src/vendor/pke/lib/scheme/ckksrns/ckksrns-fhe.cpp	2026-07-20 13:18:27
-+++ b/src/vendor/pke/lib/scheme/ckksrns/ckksrns-fhe.cpp	2026-07-20 15:33:48
++++ b/src/vendor/pke/lib/scheme/ckksrns/ckksrns-fhe.cpp	2026-07-20 15:52:49
 @@ -1,3 +1,4 @@
 +#include "r_shim/r_stream.h"  // openfhe R package patch
  //==================================================================================

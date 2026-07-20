@@ -51,15 +51,11 @@
 #if defined(__GNUC__) && !defined(__clang__)
     #if __GNUC__ >= 8
         #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wclass-memaccess"
         #if __GNUC__ >= 13
-            #pragma GCC diagnostic ignored "-Wdangling-reference"
         #endif
     #endif
 #elif defined __clang__
     #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wunused-private-field"
-    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #endif
 
 #include "cereal/archives/portable_binary.hpp"

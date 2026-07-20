@@ -12,9 +12,11 @@
 #   3. Writes the static src/vendor/config_core.h (replaces CMake's
 #      configure_file; see comments in that header).
 #   4. Rewrites std::cout / std::cerr throughout the vendored tree to the
-#      R-safe lbcrypto::RCout / lbcrypto::RCerr (src/r_shim/), as required
-#      by CRAN policy for compiled code, and records the full diff in
-#      tools/patches/0001-r-iostream-shim.patch.
+#      R-safe lbcrypto::RCout / lbcrypto::RCerr (src/r_shim/), and strips
+#      all '#pragma (GCC|clang) diagnostic ignored' lines (R CMD check
+#      flags diagnostic-suppressing pragmas, and treats some, e.g.
+#      -Wclass-memaccess, as non-portable -> WARNING).  The full diff is
+#      recorded in tools/patches/0001-cran-compliance.patch.
 #   5. Regenerates the OBJECTS lists in src/Makevars and src/Makevars.win.
 #   6. Records upstream provenance and per-file MD5 checksums in
 #      tools/VENDOR_MANIFEST.
@@ -141,10 +143,16 @@ writeLines(c(
   "#endif  // __CMAKE_GENERATED_CONFIG_CORE_H__"
 ), file.path(vendor, "config_core.h"))
 
-# --- 4. iostream patch -------------------------------------------------------
-# CRAN: "Compiled code should not ... write to stdout/stderr".  Replace every
-# std::cout / std::cerr in the vendored tree (cereal included, defensively)
-# with the R-safe streams from src/r_shim/r_stream.h.
+# --- 4. CRAN compliance patch ------------------------------------------------
+# (a) CRAN: "Compiled code should not ... write to stdout/stderr".  Replace
+#     every std::cout / std::cerr in the vendored tree (cereal included,
+#     defensively) with the R-safe streams from src/r_shim/r_stream.h.
+# (b) R CMD check's pragma scan (tools:::.check_pragmas) flags any
+#     '#pragma (GCC|clang) diagnostic ignored' as diagnostic suppression and
+#     some suppressed warnings as non-portable => WARNING under --as-cran.
+#     Strip those lines; the surrounding push/pop pairs remain and are
+#     harmless no-ops.  The compiler warnings this re-exposes are acceptable
+#     (CRAN forbids suppressing them anyway).
 pristine <- file.path(tempdir(), "vendor-pristine")
 unlink(pristine, recursive = TRUE)
 dir.create(pristine, recursive = TRUE)
@@ -152,18 +160,30 @@ copy_tree(vendor, pristine)
 
 src_files <- list.files(vendor, pattern = "\\.(h|hpp|c|cpp)$",
                         recursive = TRUE, full.names = TRUE)
-patched <- character()
+pragma_re <- "^\\s*#\\s*pragma\\s+(GCC|clang)\\s+diagnostic\\s+ignored"
+patched <- pragma_stripped <- character()
 for (f in src_files) {
   txt <- readLines(f, warn = FALSE)
-  if (!any(grepl("std::(cout|cerr)", txt))) next
-  txt <- gsub("std::cout", "lbcrypto::RCout", txt, fixed = TRUE)
-  txt <- gsub("std::cerr", "lbcrypto::RCerr", txt, fixed = TRUE)
-  txt <- c("#include \"r_shim/r_stream.h\"  // openfhe R package patch", txt)
-  writeLines(txt, f)
-  patched <- c(patched, sub(paste0(vendor, "/"), "", f))
+  rel <- sub(paste0(vendor, "/"), "", f)
+  changed <- FALSE
+  if (any(grepl("std::(cout|cerr)", txt))) {
+    txt <- gsub("std::cout", "lbcrypto::RCout", txt, fixed = TRUE)
+    txt <- gsub("std::cerr", "lbcrypto::RCerr", txt, fixed = TRUE)
+    txt <- c("#include \"r_shim/r_stream.h\"  // openfhe R package patch", txt)
+    patched <- c(patched, rel)
+    changed <- TRUE
+  }
+  if (any(grepl(pragma_re, txt, perl = TRUE))) {
+    txt <- txt[!grepl(pragma_re, txt, perl = TRUE)]
+    pragma_stripped <- c(pragma_stripped, rel)
+    changed <- TRUE
+  }
+  if (changed) writeLines(txt, f)
 }
 message("iostream patch applied to ", length(patched), " files:")
 message(paste("  ", patched, collapse = "\n"))
+message("diagnostic-ignored pragmas stripped from ", length(pragma_stripped), " files:")
+message(paste("  ", pragma_stripped, collapse = "\n"))
 
 # the seven compiled TUs known to need the patch must all be present
 expected <- c(
@@ -183,7 +203,7 @@ if (length(missing)) {
 
 # record the patch as a reviewable diff
 dir.create(file.path(pkg_root, "tools", "patches"), showWarnings = FALSE, recursive = TRUE)
-patch_file <- file.path(pkg_root, "tools", "patches", "0001-r-iostream-shim.patch")
+patch_file <- file.path(pkg_root, "tools", "patches", "0001-cran-compliance.patch")
 diff_out <- suppressWarnings(
   system2("diff", c("-ruN", shQuote(pristine), shQuote(vendor)), stdout = TRUE)
 )
@@ -227,7 +247,7 @@ writeLines(c(
   paste0("openfhe_source: https://github.com/openfheorg/openfhe-development (tag v", OPENFHE_VERSION, ")"),
   paste0("cereal_source: ", CEREAL_REPO),
   paste0("cereal_commit: ", cereal_sha),
-  paste0("patches: ", "tools/patches/0001-r-iostream-shim.patch"),
+  paste0("patches: ", "tools/patches/0001-cran-compliance.patch"),
   paste0("generated: ", format(Sys.time(), tz = "UTC", usetz = TRUE)),
   "",
   "# md5  file",

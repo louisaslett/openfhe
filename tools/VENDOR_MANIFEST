@@ -3,8 +3,8 @@ openfhe_version: 1.5.1
 openfhe_source: https://github.com/openfheorg/openfhe-development (tag v1.5.1)
 cereal_source: https://github.com/openfheorg/cereal
 cereal_commit: 984e3f194862b17916536b5fade40cba6e47a6fe
-patches: tools/patches/0001-r-iostream-shim.patch
-generated: 2026-07-20 14:33:49 UTC
+patches: tools/patches/0001-cran-compliance.patch
+generated: 2026-07-20 14:52:50 UTC
 
 # md5  file
 fd1a7a590c53b73b0048c2957731de3b binfhe/include/binfhe-base-params.h
@@ -45,7 +45,7 @@ f9b48037af2b30c46599d27461065bb2 binfhe/lib/rgsw-acc-lmkcdey.cpp
 ef115aeff47fc0f0ae58a22694da1aef cereal/include/cereal/access.hpp
 9f2cbd543483408f2523548ef8c09450 cereal/include/cereal/archives/adapters.hpp
 5a09f1d59a1d1b239901a6e13f66283c cereal/include/cereal/archives/binary.hpp
-1e93a8013bb5a22c09e37745e8f2c3fe cereal/include/cereal/archives/json.hpp
+4723607e68f2c0fdb0000d0451df0afa cereal/include/cereal/archives/json.hpp
 fb68f2351b170d5b571f610d9b58168f cereal/include/cereal/archives/portable_binary.hpp
 5bec7ac7a3f69762c2ea438e95f6380a cereal/include/cereal/archives/xml.hpp
 9861ad80b51567c4b65b298e36afb26b cereal/include/cereal/cereal.hpp
@@ -55,7 +55,7 @@ fb68f2351b170d5b571f610d9b58168f cereal/include/cereal/archives/portable_binary.
 f7b75e10fac25ebcdab7fc4e0c815d0e cereal/include/cereal/details/static_object.hpp
 5bb85c3fda28c5ad74d53462375c98ff cereal/include/cereal/details/traits.hpp
 71c17a85fd3be6cc6efbd0a0a77ff455 cereal/include/cereal/details/util.hpp
-1c63b2f1c9320eea43251a763c17d070 cereal/include/cereal/external/base64.hpp
+cac1a25f81a8962a7f91374302e02ee6 cereal/include/cereal/external/base64.hpp
 b07578c9df99c0b8b45eb041efd4a645 cereal/include/cereal/external/LICENSE
 0557f9721dc25bf234b04179a2ca293f cereal/include/cereal/external/rapidjson/allocators.h
 062c5e49d901ffc200d9e5c5c7a20a34 cereal/include/cereal/external/rapidjson/cursorstreamwrapper.h
@@ -237,8 +237,8 @@ eec809ceaa08891dc4f89f52ed709cb5 core/include/utils/prng/blake2-impl.h
 a9b45af97761c5ccb5c3459b9112925e core/include/utils/prng/prng.h
 7ee03b00c6dfa0ae831dbff2b8f522fa core/include/utils/prng/README.md
 ade02d0d7514d04bd71864ab7b1422de core/include/utils/README.md
-3a843ca8ab132de9cf287b251748805a core/include/utils/serial.h
-8217b8c64db2cbd662542c04900fe098 core/include/utils/serializable.h
+383bf2d54aaf84398c50e822970d0d45 core/include/utils/serial.h
+89befd0276c4a43a1b1e924034115d4c core/include/utils/serializable.h
 fd246db2088f45a0723cad31197c59dc core/include/utils/sertype.h
 a0141b368c4252ac5ac8bab42d0bca05 core/include/utils/type_name.h
 98209f5594e4fffebd62405f8c90bbc1 core/include/utils/utilities-int.h

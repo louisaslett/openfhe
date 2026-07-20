@@ -112,10 +112,8 @@ namespace cereal
       // the version of gcc that it claims full compatibility with.
       #if defined(__GNUC__) && !defined(__clang__)
           #pragma GCC diagnostic push
-          #pragma GCC diagnostic ignored "-Wpedantic"
       #elif defined __clang__
           #pragma clang diagnostic push
-          #pragma clang diagnostic ignored "-Wpedantic"
       #endif
 
       using int128 = __int128;

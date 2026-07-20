@@ -11,10 +11,10 @@ and is released under the BSD 2-Clause License (see the package LICENSE file).
 The package bundles third-party source code, enumerated below.  The vendored
 tree under src/vendor/ is produced from pinned upstream releases by the
 maintainer-run script tools/vendor.R; local modifications are limited to the
-patches recorded in tools/patches/ (principally the replacement of
-std::cout/std::cerr with R-safe output streams, as required by CRAN policy
-for compiled code).  Exact upstream versions and file hashes are recorded in
-tools/VENDOR_MANIFEST.
+patches recorded in tools/patches/ (the replacement of std::cout/std::cerr
+with R-safe output streams, and the removal of diagnostic-suppressing
+compiler pragmas, both as required by CRAN policy for compiled code).  Exact
+upstream versions and file hashes are recorded in tools/VENDOR_MANIFEST.
 
 
 1. OpenFHE (src/vendor/core, src/vendor/pke, src/vendor/binfhe)
