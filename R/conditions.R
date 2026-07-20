@@ -12,6 +12,7 @@
 #   openfhe_missing_key      required evaluation key not generated
 #   openfhe_stale_pointer    external pointer from a previous R session
 #   openfhe_scheme_error     operation or parameter invalid for the scheme
+#   openfhe_context_mismatch objects from different contexts combined
 #
 # All constructors are internal.
 
@@ -50,4 +51,8 @@ stop_stale_pointer <- function(call = sys.call(-1)) {
 
 stop_scheme_error <- function(message, call = sys.call(-1), data = list()) {
   stop_openfhe("openfhe_scheme_error", message, call, data)
+}
+
+stop_context_mismatch <- function(message, call = sys.call(-1), data = list()) {
+  stop_openfhe("openfhe_context_mismatch", message, call, data)
 }

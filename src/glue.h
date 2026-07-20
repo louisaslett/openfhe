@@ -8,9 +8,13 @@
 
 using Ctx = lbcrypto::CryptoContext<lbcrypto::DCRTPoly>;
 using Ct  = lbcrypto::Ciphertext<lbcrypto::DCRTPoly>;
+using Pk  = lbcrypto::PublicKey<lbcrypto::DCRTPoly>;
+using Sk  = lbcrypto::PrivateKey<lbcrypto::DCRTPoly>;
 
 using CtxPtr = cpp11::external_pointer<Ctx>;
 using CtPtr  = cpp11::external_pointer<Ct>;
+using PkPtr  = cpp11::external_pointer<Pk>;
+using SkPtr  = cpp11::external_pointer<Sk>;
 
 // Dereference an external pointer, failing loudly if it is stale (NULL).
 // R-level code performs its own check first (check_live(), which raises a

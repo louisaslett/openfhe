@@ -40,13 +40,70 @@ extern "C" SEXP _openfhe_xp_is_null_(SEXP xp) {
     return cpp11::as_sexp(xp_is_null_(cpp11::as_cpp<cpp11::decay_t<SEXP>>(xp)));
   END_CPP11
 }
+// encrypt.cpp
+SEXP enc_real_(CtxPtr ctx, PkPtr pk, cpp11::doubles x);
+extern "C" SEXP _openfhe_enc_real_(SEXP ctx, SEXP pk, SEXP x) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(enc_real_(cpp11::as_cpp<cpp11::decay_t<CtxPtr>>(ctx), cpp11::as_cpp<cpp11::decay_t<PkPtr>>(pk), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles>>(x)));
+  END_CPP11
+}
+// encrypt.cpp
+SEXP enc_int_(CtxPtr ctx, PkPtr pk, cpp11::doubles x);
+extern "C" SEXP _openfhe_enc_int_(SEXP ctx, SEXP pk, SEXP x) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(enc_int_(cpp11::as_cpp<cpp11::decay_t<CtxPtr>>(ctx), cpp11::as_cpp<cpp11::decay_t<PkPtr>>(pk), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles>>(x)));
+  END_CPP11
+}
+// encrypt.cpp
+cpp11::writable::doubles dec_real_(CtxPtr ctx, SkPtr sk, CtPtr ct, int n);
+extern "C" SEXP _openfhe_dec_real_(SEXP ctx, SEXP sk, SEXP ct, SEXP n) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(dec_real_(cpp11::as_cpp<cpp11::decay_t<CtxPtr>>(ctx), cpp11::as_cpp<cpp11::decay_t<SkPtr>>(sk), cpp11::as_cpp<cpp11::decay_t<CtPtr>>(ct), cpp11::as_cpp<cpp11::decay_t<int>>(n)));
+  END_CPP11
+}
+// encrypt.cpp
+cpp11::writable::doubles dec_int_(CtxPtr ctx, SkPtr sk, CtPtr ct, int n);
+extern "C" SEXP _openfhe_dec_int_(SEXP ctx, SEXP sk, SEXP ct, SEXP n) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(dec_int_(cpp11::as_cpp<cpp11::decay_t<CtxPtr>>(ctx), cpp11::as_cpp<cpp11::decay_t<SkPtr>>(sk), cpp11::as_cpp<cpp11::decay_t<CtPtr>>(ct), cpp11::as_cpp<cpp11::decay_t<int>>(n)));
+  END_CPP11
+}
+// encrypt.cpp
+int ct_level_(CtPtr ct);
+extern "C" SEXP _openfhe_ct_level_(SEXP ct) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(ct_level_(cpp11::as_cpp<cpp11::decay_t<CtPtr>>(ct)));
+  END_CPP11
+}
+// keys.cpp
+cpp11::list keygen_(CtxPtr ctx, bool sum);
+extern "C" SEXP _openfhe_keygen_(SEXP ctx, SEXP sum) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(keygen_(cpp11::as_cpp<cpp11::decay_t<CtxPtr>>(ctx), cpp11::as_cpp<cpp11::decay_t<bool>>(sum)));
+  END_CPP11
+}
+// keys.cpp
+void rot_keygen_(CtxPtr ctx, SkPtr sk, cpp11::integers idx);
+extern "C" SEXP _openfhe_rot_keygen_(SEXP ctx, SEXP sk, SEXP idx) {
+  BEGIN_CPP11
+    rot_keygen_(cpp11::as_cpp<cpp11::decay_t<CtxPtr>>(ctx), cpp11::as_cpp<cpp11::decay_t<SkPtr>>(sk), cpp11::as_cpp<cpp11::decay_t<cpp11::integers>>(idx));
+    return R_NilValue;
+  END_CPP11
+}
 
 extern "C" {
 static const R_CallMethodDef CallEntries[] = {
+    {"_openfhe_ct_level_",         (DL_FUNC) &_openfhe_ct_level_,         1},
     {"_openfhe_ctx_info_",         (DL_FUNC) &_openfhe_ctx_info_,         1},
     {"_openfhe_ctx_new_",          (DL_FUNC) &_openfhe_ctx_new_,          2},
+    {"_openfhe_dec_int_",          (DL_FUNC) &_openfhe_dec_int_,          4},
+    {"_openfhe_dec_real_",         (DL_FUNC) &_openfhe_dec_real_,         4},
+    {"_openfhe_enc_int_",          (DL_FUNC) &_openfhe_enc_int_,          3},
+    {"_openfhe_enc_real_",         (DL_FUNC) &_openfhe_enc_real_,         3},
+    {"_openfhe_keygen_",           (DL_FUNC) &_openfhe_keygen_,           2},
     {"_openfhe_openfhe_selftest_", (DL_FUNC) &_openfhe_openfhe_selftest_, 0},
     {"_openfhe_openfhe_version_",  (DL_FUNC) &_openfhe_openfhe_version_,  0},
+    {"_openfhe_rot_keygen_",       (DL_FUNC) &_openfhe_rot_keygen_,       3},
     {"_openfhe_xp_is_null_",       (DL_FUNC) &_openfhe_xp_is_null_,       1},
     {NULL, NULL, 0}
 };

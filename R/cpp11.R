@@ -19,3 +19,31 @@ ctx_info_ <- function(xp) {
 xp_is_null_ <- function(xp) {
   .Call(`_openfhe_xp_is_null_`, xp)
 }
+
+enc_real_ <- function(ctx, pk, x) {
+  .Call(`_openfhe_enc_real_`, ctx, pk, x)
+}
+
+enc_int_ <- function(ctx, pk, x) {
+  .Call(`_openfhe_enc_int_`, ctx, pk, x)
+}
+
+dec_real_ <- function(ctx, sk, ct, n) {
+  .Call(`_openfhe_dec_real_`, ctx, sk, ct, n)
+}
+
+dec_int_ <- function(ctx, sk, ct, n) {
+  .Call(`_openfhe_dec_int_`, ctx, sk, ct, n)
+}
+
+ct_level_ <- function(ct) {
+  .Call(`_openfhe_ct_level_`, ct)
+}
+
+keygen_ <- function(ctx, sum) {
+  .Call(`_openfhe_keygen_`, ctx, sum)
+}
+
+rot_keygen_ <- function(ctx, sk, idx) {
+  invisible(.Call(`_openfhe_rot_keygen_`, ctx, sk, idx))
+}

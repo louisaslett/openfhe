@@ -1,8 +1,4 @@
-# Note ring_dim 1024: OpenFHE 1.5.1 rejects the BGV/depth-2/ring-512 corner
-# (EstimateLogP failure in hybrid key switching); 1024 works for all schemes.
-toy <- function(scheme = "CKKS", ...) {
-  fhe_context(scheme, mult_depth = 2, security = NA, ring_dim = 1024, ...)
-}
+# toy() comes from tests/testthat/helper.R
 
 test_that("toy contexts can be created for all three schemes", {
   for (s in c("CKKS", "BFV", "BGV")) {
