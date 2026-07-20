@@ -23,9 +23,9 @@ decrypt(ct, keys, ...)
 }
 \arguments{
 \item{x}{The vector to encrypt: numeric for CKKS; whole-valued numeric,
-integer or logical for any scheme.  At most \code{\link[=slot_count]{slot_count()}} elements
-(a context-level limit: raise \code{ring_dim}/\code{batch_size}, or split the
-data, to fit more).}
+integer or logical for any scheme.  Any length: vectors longer than
+\code{\link[=slot_count]{slot_count()}} are split across several underlying ciphertexts
+automatically.}
 
 \item{keys}{For \code{encrypt()} an \link[=FHEKeys-class]{FHEKeys} or \code{FHEPublicKey};
 for \code{decrypt()} an \link[=FHEKeys-class]{FHEKeys} or \code{FHESecretKey}.}
@@ -41,12 +41,14 @@ exact, or numeric if any value exceeds R's integer range), of the
 same length as the originally encrypted vector.
 }
 \description{
-\code{encrypt()} turns an R vector into a \link[=Ciphertext-class]{Ciphertext}: all elements
-are packed into the SIMD slots of a single OpenFHE ciphertext, so a
-vector of up to \code{\link[=slot_count]{slot_count()}} elements is one encrypted object.
-\code{decrypt()} recovers the plaintext vector, at its original length.
-Both are data-first, so they read naturally in a pipe:
-\code{x |> encrypt(keys) |> decrypt(keys)}.
+\code{encrypt()} turns an R vector into a \link[=Ciphertext-class]{Ciphertext}: elements are
+packed into the SIMD slots of an OpenFHE ciphertext (\code{\link[=slot_count]{slot_count()}}
+per ciphertext), and longer vectors transparently spill across as many
+underlying ciphertexts as needed -- vector length is unlimited (until
+memory runs out).  \code{decrypt()} recovers the plaintext vector, at its
+original length.  Both are data-first, so they read naturally in a
+pipe: \code{x |> encrypt(keys) |> decrypt(keys)}.  See \code{\link[=chunks]{chunks()}} to look
+at the underlying ciphertexts individually.
 }
 \section{Scheme-aware encoding}{
 

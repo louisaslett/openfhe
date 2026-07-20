@@ -1,11 +1,13 @@
 #' Encrypt and decrypt vectors
 #'
-#' `encrypt()` turns an R vector into a [Ciphertext-class]: all elements
-#' are packed into the SIMD slots of a single OpenFHE ciphertext, so a
-#' vector of up to [slot_count()] elements is one encrypted object.
-#' `decrypt()` recovers the plaintext vector, at its original length.
-#' Both are data-first, so they read naturally in a pipe:
-#' `x |> encrypt(keys) |> decrypt(keys)`.
+#' `encrypt()` turns an R vector into a [Ciphertext-class]: elements are
+#' packed into the SIMD slots of an OpenFHE ciphertext ([slot_count()]
+#' per ciphertext), and longer vectors transparently spill across as many
+#' underlying ciphertexts as needed -- vector length is unlimited (until
+#' memory runs out).  `decrypt()` recovers the plaintext vector, at its
+#' original length.  Both are data-first, so they read naturally in a
+#' pipe: `x |> encrypt(keys) |> decrypt(keys)`.  See [chunks()] to look
+#' at the underlying ciphertexts individually.
 #'
 #' @section Scheme-aware encoding:
 #' * **CKKS** encrypts real numbers *approximately*: `decrypt()` returns
@@ -24,9 +26,9 @@
 #' requires the secret key.
 #'
 #' @param x The vector to encrypt: numeric for CKKS; whole-valued numeric,
-#'   integer or logical for any scheme.  At most [slot_count()] elements
-#'   (a context-level limit: raise `ring_dim`/`batch_size`, or split the
-#'   data, to fit more).
+#'   integer or logical for any scheme.  Any length: vectors longer than
+#'   [slot_count()] are split across several underlying ciphertexts
+#'   automatically.
 #' @param keys For `encrypt()` an [FHEKeys-class] or `FHEPublicKey`;
 #'   for `decrypt()` an [FHEKeys-class] or `FHESecretKey`.
 #' @param ct A [Ciphertext-class] to decrypt.
@@ -95,21 +97,8 @@ setMethod("encrypt", signature(x = "ANY", keys = "FHEPublicKey"),
         "cannot encrypt missing or non-finite values (NA, NaN, Inf)"
       )
     }
-    slots <- slot_count(ctx)
-    if (length(x) > slots) {
-      stop_length_mismatch(sprintf(
-        paste0(
-          "vector of length %d does not fit the %d SIMD slots of this %s ",
-          "context; increase ring_dim (or batch_size), or split the data"
-        ),
-        length(x), slots, ctx@scheme
-      ))
-    }
-
     x <- as.double(x)
-    ptr <- if (ctx@scheme == "CKKS") {
-      enc_real_(ctx@ptr, keys@ptr, x)
-    } else {
+    if (ctx@scheme != "CKKS") {
       if (any(x != trunc(x))) {
         stop_scheme_error(sprintf(
           paste0(
@@ -129,10 +118,17 @@ setMethod("encrypt", signature(x = "ANY", keys = "FHEPublicKey"),
           max_abs, ctx@scheme
         ))
       }
-      enc_int_(ctx@ptr, keys@ptr, x)
     }
 
-    methods::new("Ciphertext", ptr = ptr, context = ctx,
+    # one packed ciphertext per slot_count() elements; the last may be
+    # partly filled (padding never reaches R: decrypt uses the true length)
+    slots <- slot_count(ctx)
+    enc1 <- if (ctx@scheme == "CKKS") enc_real_ else enc_int_
+    ptrs <- lapply(seq(1L, length(x), by = slots), function(from) {
+      enc1(ctx@ptr, keys@ptr, x[from:min(from + slots - 1L, length(x))])
+    })
+
+    methods::new("Ciphertext", ptrs = ptrs, context = ctx,
                  length = length(x))
   }
 )
@@ -160,11 +156,19 @@ setMethod("decrypt", signature(ct = "Ciphertext", keys = "FHESecretKey"),
       ))
     }
 
+    dec1 <- if (ctx@scheme == "CKKS") dec_real_ else dec_int_
+    slots <- slot_count(ctx)
+    n_ct <- length(ct@ptrs)
+    v <- unlist(lapply(seq_len(n_ct), function(i) {
+      len <- if (i < n_ct) slots else ct@length - (n_ct - 1L) * slots
+      dec1(ctx@ptr, keys@ptr, ct@ptrs[[i]], len)
+    }))
     if (ctx@scheme == "CKKS") {
-      dec_real_(ctx@ptr, keys@ptr, ct@ptr, ct@length)
+      v
+    } else if (all(abs(v) <= .Machine$integer.max)) {
+      as.integer(v)
     } else {
-      v <- dec_int_(ctx@ptr, keys@ptr, ct@ptr, ct@length)
-      if (all(abs(v) <= .Machine$integer.max)) as.integer(v) else v
+      v
     }
   }
 )

@@ -75,6 +75,27 @@ extern "C" SEXP _openfhe_ct_level_(SEXP ct) {
     return cpp11::as_sexp(ct_level_(cpp11::as_cpp<cpp11::decay_t<CtPtr>>(ct)));
   END_CPP11
 }
+// inspect.cpp
+std::string ct_text_(CtPtr ct);
+extern "C" SEXP _openfhe_ct_text_(SEXP ct) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(ct_text_(cpp11::as_cpp<cpp11::decay_t<CtPtr>>(ct)));
+  END_CPP11
+}
+// inspect.cpp
+std::string pk_text_(PkPtr pk);
+extern "C" SEXP _openfhe_pk_text_(SEXP pk) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(pk_text_(cpp11::as_cpp<cpp11::decay_t<PkPtr>>(pk)));
+  END_CPP11
+}
+// inspect.cpp
+std::string sk_text_(SkPtr sk);
+extern "C" SEXP _openfhe_sk_text_(SEXP sk) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(sk_text_(cpp11::as_cpp<cpp11::decay_t<SkPtr>>(sk)));
+  END_CPP11
+}
 // keys.cpp
 cpp11::list keygen_(CtxPtr ctx, bool sum);
 extern "C" SEXP _openfhe_keygen_(SEXP ctx, SEXP sum) {
@@ -94,6 +115,7 @@ extern "C" SEXP _openfhe_rot_keygen_(SEXP ctx, SEXP sk, SEXP idx) {
 extern "C" {
 static const R_CallMethodDef CallEntries[] = {
     {"_openfhe_ct_level_",         (DL_FUNC) &_openfhe_ct_level_,         1},
+    {"_openfhe_ct_text_",          (DL_FUNC) &_openfhe_ct_text_,          1},
     {"_openfhe_ctx_info_",         (DL_FUNC) &_openfhe_ctx_info_,         1},
     {"_openfhe_ctx_new_",          (DL_FUNC) &_openfhe_ctx_new_,          2},
     {"_openfhe_dec_int_",          (DL_FUNC) &_openfhe_dec_int_,          4},
@@ -103,7 +125,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_openfhe_keygen_",           (DL_FUNC) &_openfhe_keygen_,           2},
     {"_openfhe_openfhe_selftest_", (DL_FUNC) &_openfhe_openfhe_selftest_, 0},
     {"_openfhe_openfhe_version_",  (DL_FUNC) &_openfhe_openfhe_version_,  0},
+    {"_openfhe_pk_text_",          (DL_FUNC) &_openfhe_pk_text_,          1},
     {"_openfhe_rot_keygen_",       (DL_FUNC) &_openfhe_rot_keygen_,       3},
+    {"_openfhe_sk_text_",          (DL_FUNC) &_openfhe_sk_text_,          1},
     {"_openfhe_xp_is_null_",       (DL_FUNC) &_openfhe_xp_is_null_,       1},
     {NULL, NULL, 0}
 };

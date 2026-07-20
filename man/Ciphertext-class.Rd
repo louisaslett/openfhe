@@ -17,15 +17,20 @@
 \item{x}{A \code{Ciphertext}.}
 }
 \description{
-A \code{Ciphertext} is one encrypted R vector: all of its elements are packed
-into the SIMD slots of a single OpenFHE ciphertext.  Create one with
-\code{\link[=encrypt]{encrypt()}}; recover the plaintext with \code{\link[=decrypt]{decrypt()}}.  The true R length
-is recorded so that decryption never exposes slot padding.
+A \code{Ciphertext} is one encrypted R vector.  Its elements are packed into
+the SIMD slots of an OpenFHE ciphertext (\code{\link[=slot_count]{slot_count()}} elements per
+ciphertext); vectors longer than the slot count transparently spill
+across as many underlying ciphertexts as needed, so there is no cap on
+vector length (beyond memory).  Create one with \code{\link[=encrypt]{encrypt()}}; recover
+the plaintext with \code{\link[=decrypt]{decrypt()}}.  The true R length is recorded so that
+decryption never exposes slot padding, and \code{\link[=chunks]{chunks()}} gives access to
+the individual underlying ciphertexts.
 }
 \section{Functions}{
 \itemize{
 \item \code{show(Ciphertext)}: Compact description of an encrypted vector:
-its length, scheme and multiplicative level.
+its length, scheme, multiplicative level, and -- when the vector
+spills over several underlying ciphertexts -- how many.
 
 \item \code{length(Ciphertext)}: The true length of the encrypted vector.
 
@@ -33,7 +38,8 @@ its length, scheme and multiplicative level.
 \section{Slots}{
 
 \describe{
-\item{\code{ptr}}{External pointer to the native OpenFHE ciphertext.}
+\item{\code{ptrs}}{List of external pointers to the underlying native OpenFHE
+ciphertexts, in element order; all but the last are fully packed.}
 
 \item{\code{context}}{The \link[=FHEContext-class]{FHEContext} the ciphertext was encrypted under.}
 
@@ -41,5 +47,5 @@ its length, scheme and multiplicative level.
 }}
 
 \seealso{
-\code{\link[=encrypt]{encrypt()}}, \code{\link[=decrypt]{decrypt()}}
+\code{\link[=encrypt]{encrypt()}}, \code{\link[=decrypt]{decrypt()}}, \code{\link[=chunks]{chunks()}}
 }

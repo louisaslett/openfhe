@@ -37,14 +37,29 @@ test_that("length is preserved, from scalars up to a full ciphertext", {
   }
 })
 
-test_that("over-long vectors are rejected with the achievable maximum", {
+test_that("vectors longer than the slot count spill across ciphertexts", {
   ctx <- toy("CKKS")
   keys <- keygen(ctx)
-  n <- slot_count(ctx)
-  expect_error(encrypt(numeric(n + 1), keys),
-               class = "openfhe_length_mismatch")
-  expect_error(encrypt(numeric(n + 1), keys),
-               regexp = sprintf("%d SIMD slots", n))
+  slots <- slot_count(ctx)
+
+  x <- seq_len(slots + 1) / 3  # one element over: two ciphertexts
+  ct <- encrypt(x, keys)
+  expect_length(ct@ptrs, 2L)
+  expect_identical(length(ct), slots + 1L)
+  expect_equal(decrypt(ct, keys), x, tolerance = 1e-4)
+
+  x <- seq_len(3 * slots + 129) / 100  # partly-filled fourth ciphertext
+  ct <- encrypt(x, keys)
+  expect_length(ct@ptrs, 4L)
+  expect_equal(decrypt(ct, keys), x, tolerance = 1e-4)
+})
+
+test_that("spilled integer vectors round trip exactly", {
+  keys <- keygen(toy("BFV"))
+  x <- c(seq_len(1300L), -seq_len(700L))  # 2000 values in 1024-slot chunks
+  ct <- encrypt(x, keys)
+  expect_length(ct@ptrs, 2L)
+  expect_identical(decrypt(ct, keys), x)
 })
 
 test_that("decrypting with keys from a different context errors", {
@@ -83,4 +98,5 @@ test_that("unencryptable inputs raise classed errors", {
 test_that("ciphertext printing is informative", {
   keys <- keygen(toy("CKKS"))
   expect_snapshot(show(encrypt(c(1.5, 2.5, 3.5), keys)))
+  expect_snapshot(show(encrypt(numeric(1000), keys)))  # spilled: 2 ciphertexts
 })

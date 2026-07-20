@@ -40,6 +40,18 @@ ct_level_ <- function(ct) {
   .Call(`_openfhe_ct_level_`, ct)
 }
 
+ct_text_ <- function(ct) {
+  .Call(`_openfhe_ct_text_`, ct)
+}
+
+pk_text_ <- function(pk) {
+  .Call(`_openfhe_pk_text_`, pk)
+}
+
+sk_text_ <- function(sk) {
+  .Call(`_openfhe_sk_text_`, sk)
+}
+
 keygen_ <- function(ctx, sum) {
   .Call(`_openfhe_keygen_`, ctx, sum)
 }

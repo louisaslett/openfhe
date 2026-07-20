@@ -35,11 +35,21 @@ setClass(
 )
 
 # Raise a classed error if `x` holds a stale external pointer (e.g. the
-# object was restored with readRDS()/load() in a fresh session).
+# object was restored with readRDS()/load() in a fresh session).  A
+# Ciphertext holds a list of pointers (one per underlying ciphertext);
+# everything else holds a single `ptr`.
 check_live <- function(x) {
-  ptr <- if (isVirtualClass(class(x))) NULL else methods::slot(x, "ptr")
-  if (xp_is_null_(ptr)) {
-    stop_stale_pointer(call = sys.call(-1))
+  ptrs <- if (methods::.hasSlot(x, "ptrs")) {
+    x@ptrs
+  } else if (methods::.hasSlot(x, "ptr")) {
+    list(methods::slot(x, "ptr"))
+  } else {
+    list()
+  }
+  for (p in ptrs) {
+    if (xp_is_null_(p)) {
+      stop_stale_pointer(call = sys.call(-1))
+    }
   }
   invisible(x)
 }
@@ -92,21 +102,26 @@ setClass(
 
 #' Encrypted vector
 #'
-#' A `Ciphertext` is one encrypted R vector: all of its elements are packed
-#' into the SIMD slots of a single OpenFHE ciphertext.  Create one with
-#' [encrypt()]; recover the plaintext with [decrypt()].  The true R length
-#' is recorded so that decryption never exposes slot padding.
+#' A `Ciphertext` is one encrypted R vector.  Its elements are packed into
+#' the SIMD slots of an OpenFHE ciphertext ([slot_count()] elements per
+#' ciphertext); vectors longer than the slot count transparently spill
+#' across as many underlying ciphertexts as needed, so there is no cap on
+#' vector length (beyond memory).  Create one with [encrypt()]; recover
+#' the plaintext with [decrypt()].  The true R length is recorded so that
+#' decryption never exposes slot padding, and [chunks()] gives access to
+#' the individual underlying ciphertexts.
 #'
-#' @slot ptr External pointer to the native OpenFHE ciphertext.
+#' @slot ptrs List of external pointers to the underlying native OpenFHE
+#'   ciphertexts, in element order; all but the last are fully packed.
 #' @slot context The [FHEContext-class] the ciphertext was encrypted under.
 #' @slot length The true length of the encrypted vector.
 #'
-#' @seealso [encrypt()], [decrypt()]
+#' @seealso [encrypt()], [decrypt()], [chunks()]
 #' @export
 setClass(
   "Ciphertext",
   slots = c(
-    ptr     = "externalptr",
+    ptrs    = "list",
     context = "FHEContext",
     length  = "integer"
   )
@@ -196,18 +211,28 @@ setMethod("show", "FHESecretKey", function(object) {
 })
 
 #' @describeIn Ciphertext-class Compact description of an encrypted vector:
-#'   its length, scheme and multiplicative level.
+#'   its length, scheme, multiplicative level, and -- when the vector
+#'   spills over several underlying ciphertexts -- how many.
 #' @param object A `Ciphertext`.
 #' @export
 setMethod("show", "Ciphertext", function(object) {
   cat(sprintf("<Encrypted vector[%d]>", object@length))
-  if (xp_is_null_(object@ptr)) {
+  if (any(vapply(object@ptrs, xp_is_null_, logical(1)))) {
     cat("\n")
-    show_stale(object@ptr)
+    cat("  (stale: restored from an earlier R session; recreate the object",
+        "or use load_fhe())\n")
     return(invisible(object))
   }
-  cat(sprintf(" %s | level %d of %d\n",
-              object@context@scheme, ct_level_(object@ptr),
+  n_ct <- length(object@ptrs)
+  cat(sprintf(" %s |%s level %d of %d\n",
+              object@context@scheme,
+              if (n_ct > 1) {
+                sprintf(" %d ciphertexts (%d slots) |", n_ct,
+                        slot_count(object@context))
+              } else {
+                ""
+              },
+              ct_level_(object@ptrs[[1]]),
               mult_depth(object@context)))
   invisible(object)
 })
