@@ -216,14 +216,15 @@ message("patch diff written to ", patch_file)
 # --- 5. regenerate OBJECTS in Makevars / Makevars.win ------------------------
 rel_src <- function(paths) sub(paste0(file.path(pkg_root, "src"), "/"), "", paths)
 
-glue_srcs <- c(
-  list.files(file.path(pkg_root, "src"), pattern = "\\.cpp$", full.names = TRUE),
-  list.files(file.path(pkg_root, "src", "r_shim"), pattern = "\\.cpp$", full.names = TRUE)
-)
+# Binding glue at the top of src/ is picked up by a GNU-make wildcard so new
+# glue files never require re-vendoring; only the vendored tree is explicit.
 vendor_srcs <- list.files(vendor, pattern = "\\.(cpp|c)$",
                           recursive = TRUE, full.names = TRUE)
-objs <- sub("\\.(cpp|c)$", ".o", rel_src(c(sort(glue_srcs), sort(vendor_srcs))))
-obj_lines <- paste0("OBJECTS = ", paste(objs, collapse = " \\\n\t"))
+objs <- sub("\\.(cpp|c)$", ".o", rel_src(sort(vendor_srcs)))
+obj_lines <- paste0(
+  "OBJECTS = $(patsubst %.cpp,%.o,$(wildcard *.cpp)) r_shim/r_stream.o \\\n\t",
+  paste(objs, collapse = " \\\n\t")
+)
 
 for (mk in c("Makevars", "Makevars.win")) {
   path <- file.path(pkg_root, "src", mk)

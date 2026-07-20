@@ -7,3 +7,15 @@ openfhe_version_ <- function() {
 openfhe_selftest_ <- function() {
   .Call(`_openfhe_openfhe_selftest_`)
 }
+
+ctx_new_ <- function(scheme, opts) {
+  .Call(`_openfhe_ctx_new_`, scheme, opts)
+}
+
+ctx_info_ <- function(xp) {
+  .Call(`_openfhe_ctx_info_`, xp)
+}
+
+xp_is_null_ <- function(xp) {
+  .Call(`_openfhe_xp_is_null_`, xp)
+}
