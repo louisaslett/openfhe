@@ -1,0 +1,6 @@
+^openfhe\.Rproj$
+^\.Rproj\.user$
+^\.github$
+^cran-comments\.md$
+^pkgdown$
+^_pkgdown\.yml$

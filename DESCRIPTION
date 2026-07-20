@@ -1,0 +1,43 @@
+Package: openfhe
+Type: Package
+Title: Fully Homomorphic Encryption via the 'OpenFHE' Library
+Version: 0.1.0
+Authors@R: c(
+    person("Louis", "Aslett", email = "louis.aslett@durham.ac.uk",
+           role = c("aut", "cre", "cph"),
+           comment = c(ORCID = "0000-0003-2211-233X")),
+    person("Duality Technologies Inc.", role = "cph",
+           comment = "Bundled OpenFHE library"),
+    person("New Jersey Institute of Technology (NJIT)", role = "cph",
+           comment = "Bundled OpenFHE library"),
+    person("The OpenFHE contributors", role = "cph",
+           comment = "Bundled OpenFHE library; see inst/COPYRIGHTS"),
+    person("Samuel", "Neves", role = "cph",
+           comment = "Bundled BLAKE2 implementation"),
+    person("W. Shane", "Grant", role = "cph",
+           comment = "Bundled 'cereal' serialisation library"),
+    person("Randolph", "Voorhies", role = "cph",
+           comment = "Bundled 'cereal' serialisation library"))
+Description: Compute directly on encrypted data using fully homomorphic
+    encryption, without ever decrypting it.  Provides high level idiomatic
+    interfaces to the 'OpenFHE' library (Al Badawi et al., 2022)
+    <doi:10.1145/3560810.3564267>, which is bundled, including the 'BFV'
+    (Fan and Vercauteren, 2012) <https://eprint.iacr.org/2012/144>, 'BGV'
+    (Brakerski, Gentry and Vaikuntanathan, 2014) <doi:10.1145/2633600> and
+    'CKKS' (Cheon et al., 2017) <doi:10.1007/978-3-319-70694-8_15> schemes,
+    with support for encrypted vectors and matrices, arithmetic and linear
+    algebra operators, rotations and reductions, approximate evaluation of
+    smooth functions, encrypted comparisons via scheme switching, 'CKKS'
+    bootstrapping, and serialisation of keys and ciphertexts.
+License: BSD_2_clause + file LICENSE
+URL: https://github.com/louisaslett/openfhe
+BugReports: https://github.com/louisaslett/openfhe/issues
+Depends: R (>= 4.3.0)
+Imports: methods
+LinkingTo: cpp11
+Suggests: testthat (>= 3.0.0)
+SystemRequirements: GNU make, C++17
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0

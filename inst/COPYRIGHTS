@@ -1,0 +1,108 @@
+Copyright and licensing information for the openfhe R package
+=============================================================
+
+The R package code (files under R/, tests/, vignettes/, and the C++ binding
+glue at the top level of src/) is:
+
+    Copyright (c) 2017-2026 Louis Aslett
+
+and is released under the BSD 2-Clause License (see the package LICENSE file).
+
+The package bundles third-party source code, enumerated below.  The vendored
+tree under src/vendor/ is produced from pinned upstream releases by the
+maintainer-run script tools/vendor.R; local modifications are limited to the
+patches recorded in tools/patches/ (principally the replacement of
+std::cout/std::cerr with R-safe output streams, as required by CRAN policy
+for compiled code).  Exact upstream versions and file hashes are recorded in
+tools/VENDOR_MANIFEST.
+
+
+1. OpenFHE (src/vendor/core, src/vendor/pke, src/vendor/binfhe)
+---------------------------------------------------------------
+
+OpenFHE v1.5.1, https://github.com/openfheorg/openfhe-development
+
+Copyright (c) OpenFHE; per-file notices read:
+Copyright (c) 2014-2026, New Jersey Institute of Technology (NJIT),
+Duality Technologies Inc. and other contributors.
+
+Distributed under the BSD 2-Clause License:
+
+    BSD 2-Clause License
+
+    Copyright (c) 2022, OpenFHE
+
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+
+    1. Redistributions of source code must retain the above copyright notice, this
+       list of conditions and the following disclaimer.
+
+    2. Redistributions in binary form must reproduce the above copyright notice,
+       this list of conditions and the following disclaimer in the documentation
+       and/or other materials provided with the distribution.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+2. BLAKE2 reference implementation (src/vendor/core/lib/utils/prng/)
+--------------------------------------------------------------------
+
+BLAKE2 reference source code package, https://blake2.net
+
+    Copyright 2012, Samuel Neves <sneves@dei.uc.pt>.  You may use this under
+    the terms of the CC0, the OpenSSL Licence, or the Apache Public License
+    2.0, at your option.  The terms of these licenses can be found at:
+
+    - CC0 1.0 Universal : http://creativecommons.org/publicdomain/zero/1.0
+    - OpenSSL license   : https://www.openssl.org/source/license.html
+    - Apache 2.0        : http://www.apache.org/licenses/LICENSE-2.0
+
+This package redistributes the BLAKE2 code under the CC0 1.0 Universal
+option of that tri-license.
+
+
+3. cereal serialization library (src/vendor/cereal/)
+----------------------------------------------------
+
+cereal, header-only C++11 serialization library,
+vendored from the OpenFHE fork at https://github.com/openfheorg/cereal
+(upstream: https://github.com/USCiLab/cereal)
+
+Distributed under the BSD 3-Clause License:
+
+    Copyright (c) 2014, Randolph Voorhies, Shane Grant
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+        * Redistributions of source code must retain the above copyright
+          notice, this list of conditions and the following disclaimer.
+        * Redistributions in binary form must reproduce the above copyright
+          notice, this list of conditions and the following disclaimer in the
+          documentation and/or other materials provided with the distribution.
+        * Neither the name of cereal nor the
+          names of its contributors may be used to endorse or promote products
+          derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL RANDOLPH VOORHIES OR SHANE GRANT BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

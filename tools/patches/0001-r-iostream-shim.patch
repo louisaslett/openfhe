@@ -1,0 +1,534 @@
+diff -ruN a/src/vendor/binfhe/lib/lwe-pke.cpp b/src/vendor/binfhe/lib/lwe-pke.cpp
+--- a/src/vendor/binfhe/lib/lwe-pke.cpp	2026-07-20 13:18:27
++++ b/src/vendor/binfhe/lib/lwe-pke.cpp	2026-07-20 15:33:48
+@@ -1,3 +1,4 @@
++#include "r_shim/r_stream.h"  // openfhe R package patch
+ //==================================================================================
+ // BSD 2-Clause License
+ //
+@@ -206,7 +207,7 @@
+     double error =
+         (static_cast<double>(p) * (r.ConvertToDouble() - q.ConvertToDouble() / (p * 2))) / q.ConvertToDouble() -
+         static_cast<double>(*result);
+-    std::cerr << error * q.ConvertToDouble() / static_cast<double>(p) << std::endl;
++    lbcrypto::RCerr << error * q.ConvertToDouble() / static_cast<double>(p) << std::endl;
+ #endif
+ }
+ 
+diff -ruN a/src/vendor/cereal/include/cereal/archives/xml.hpp b/src/vendor/cereal/include/cereal/archives/xml.hpp
+--- a/src/vendor/cereal/include/cereal/archives/xml.hpp	2026-07-20 15:33:45
++++ b/src/vendor/cereal/include/cereal/archives/xml.hpp	2026-07-20 15:33:48
+@@ -1,3 +1,4 @@
++#include "r_shim/r_stream.h"  // openfhe R package patch
+ /*! \file xml.hpp
+     \brief XML input and output archives */
+ /*
+@@ -425,13 +426,13 @@
+         }
+         catch( rapidxml::parse_error const & )
+         {
+-          //std::cerr << "-----Original-----" << std::endl;
++          //lbcrypto::RCerr << "-----Original-----" << std::endl;
+           //stream.seekg(0);
+-          //std::cout << std::string( std::istreambuf_iterator<char>( stream ), std::istreambuf_iterator<char>() ) << std::endl;
++          //lbcrypto::RCout << std::string( std::istreambuf_iterator<char>( stream ), std::istreambuf_iterator<char>() ) << std::endl;
+ 
+-          //std::cerr << "-----Error-----" << std::endl;
+-          //std::cerr << e.what() << std::endl;
+-          //std::cerr << e.where<char>() << std::endl;
++          //lbcrypto::RCerr << "-----Error-----" << std::endl;
++          //lbcrypto::RCerr << e.what() << std::endl;
++          //lbcrypto::RCerr << e.where<char>() << std::endl;
+           throw Exception("XML Parsing failed - likely due to invalid characters or invalid naming");
+         }
+ 
+diff -ruN a/src/vendor/cereal/include/cereal/external/rapidxml/rapidxml.hpp b/src/vendor/cereal/include/cereal/external/rapidxml/rapidxml.hpp
+--- a/src/vendor/cereal/include/cereal/external/rapidxml/rapidxml.hpp	2026-07-20 15:33:45
++++ b/src/vendor/cereal/include/cereal/external/rapidxml/rapidxml.hpp	2026-07-20 15:33:48
+@@ -1,3 +1,4 @@
++#include "r_shim/r_stream.h"  // openfhe R package patch
+ #ifndef CEREAL_RAPIDXML_HPP_INCLUDED
+ #define CEREAL_RAPIDXML_HPP_INCLUDED
+ 
+@@ -40,7 +41,7 @@
+     //! <pre>
+     //! void %rapidxml::%parse_error_handler(const char *what, void *where)
+     //! {
+-    //!     std::cout << "Parse error: " << what << "\n";
++    //!     lbcrypto::RCout << "Parse error: " << what << "\n";
+     //!     std::abort();
+     //! }
+     //! </pre>
+diff -ruN a/src/vendor/core/include/math/hal/bigintntl/ubintntl.h b/src/vendor/core/include/math/hal/bigintntl/ubintntl.h
+--- a/src/vendor/core/include/math/hal/bigintntl/ubintntl.h	2026-07-20 13:18:27
++++ b/src/vendor/core/include/math/hal/bigintntl/ubintntl.h	2026-07-20 15:33:48
+@@ -1,3 +1,4 @@
++#include "r_shim/r_stream.h"  // openfhe R package patch
+ //==================================================================================
+ // BSD 2-Clause License
+ //
+@@ -886,9 +887,9 @@
+             s >> result;
+ 
+             if ((this->GetMSB() > (sizeof(T) * 8)) || (this->GetMSB() > NTL_ZZ_NBITS)) {
+-                std::cerr << "Warning myZZ::ConvertToInt() Loss of precision. " << std::endl;
+-                std::cerr << "input  " << *this << std::endl;
+-                std::cerr << "result  " << result << std::endl;
++                lbcrypto::RCerr << "Warning myZZ::ConvertToInt() Loss of precision. " << std::endl;
++                lbcrypto::RCerr << "input  " << *this << std::endl;
++                lbcrypto::RCerr << "result  " << result << std::endl;
+             }
+             return result;
+         }
+diff -ruN a/src/vendor/core/include/math/hal/intnat/mubintvecnat.h b/src/vendor/core/include/math/hal/intnat/mubintvecnat.h
+--- a/src/vendor/core/include/math/hal/intnat/mubintvecnat.h	2026-07-20 13:18:27
++++ b/src/vendor/core/include/math/hal/intnat/mubintvecnat.h	2026-07-20 15:33:48
+@@ -1,3 +1,4 @@
++#include "r_shim/r_stream.h"  // openfhe R package patch
+ //==================================================================================
+ // BSD 2-Clause License
+ //
+@@ -84,7 +85,7 @@
+         return static_cast<Tp*>(::operator new(n));
+     }
+     void deallocate(Tp* p, std::size_t n) {
+-        std::cout << "deallocating " << n*sizeof*p << " bytes\n";
++        lbcrypto::RCout << "deallocating " << n*sizeof*p << " bytes\n";
+         ::operator delete(p);
+     }
+ };
+@@ -102,11 +103,11 @@
+     template <class T> NAlloc(const NAlloc<T>&) {}
+     Tp* allocate(std::size_t n) {
+         n *= sizeof(Tp);
+-        std::cout << "allocating   " << n << " bytes\n";
++        lbcrypto::RCout << "allocating   " << n << " bytes\n";
+         return static_cast<Tp*>(::operator new(n));
+     }
+     void deallocate(Tp* p, std::size_t n) {
+-        std::cout << "deallocating " << n*sizeof*p << " bytes\n";
++        lbcrypto::RCout << "deallocating " << n*sizeof*p << " bytes\n";
+         ::operator delete(p);
+     }
+ };
+diff -ruN a/src/vendor/core/include/utils/caller_info.h b/src/vendor/core/include/utils/caller_info.h
+--- a/src/vendor/core/include/utils/caller_info.h	2026-07-20 13:18:27
++++ b/src/vendor/core/include/utils/caller_info.h	2026-07-20 15:33:48
+@@ -1,3 +1,4 @@
++#include "r_shim/r_stream.h"  // openfhe R package patch
+ //==================================================================================
+ // BSD 2-Clause License
+ //
+@@ -56,7 +57,7 @@
+  *      void foo(int x);
+  *  *.cpp:
+  *      void foo(int x) {
+- *          std::cout << "foo() input: " << x << std::endl;
++ *          lbcrypto::RCout << "foo() input: " << x << std::endl;
+  *      }
+  *
+  *  after adding caller information
+@@ -64,7 +65,7 @@
+  *      void foo(int x, CALLER_INFO_ARGS_HDR);
+  *  *.cpp:
+  *      void foo(int x, CALLER_INFO_ARGS_CPP) {
+- *          std::cout << "foo() input: " << x << CALLER_INFO << std::endl;
++ *          lbcrypto::RCout << "foo() input: " << x << CALLER_INFO << std::endl;
+  *      }
+  */
+ 
+diff -ruN a/src/vendor/core/include/utils/debug.h b/src/vendor/core/include/utils/debug.h
+--- a/src/vendor/core/include/utils/debug.h	2026-07-20 13:18:27
++++ b/src/vendor/core/include/utils/debug.h	2026-07-20 15:33:48
+@@ -1,3 +1,4 @@
++#include "r_shim/r_stream.h"  // openfhe R package patch
+ //==================================================================================
+ // BSD 2-Clause License
+ //
+@@ -40,7 +41,7 @@
+ /* defining NDEBUG in the compile line turns everything off.
+    unless PROFILE is defined in the file before all includes,'
+    in which case TIC/TOC will still work and PROFILELOG() can be
+-   used for logging results to std::cout, and OPENFHE_DEBUG() will remain
++   used for logging results to lbcrypto::RCout, and OPENFHE_DEBUG() will remain
+    silent. dbg_flag does not get used by PROFILELOG()
+  */
+ 
+@@ -60,7 +61,7 @@
+     #define OPENFHE_DEBUG(x)                 \
+         do {                                 \
+             if (dbg_flag) {                  \
+-                std::cerr << x << std::endl; \
++                lbcrypto::RCerr << x << std::endl; \
+             }                                \
+         } while (0)
+ 
+@@ -68,7 +69,7 @@
+     #define OPENFHE_DEBUGEXP(x)                           \
+         do {                                              \
+             if (dbg_flag) {                               \
+-                std::cerr << #x << ":" << x << std::endl; \
++                lbcrypto::RCerr << #x << ":" << x << std::endl; \
+             }                                             \
+         } while (0)
+ 
+@@ -76,7 +77,7 @@
+     #define OPENFHE_DEBUGWHERE(x)                                                                \
+         do {                                                                                     \
+             if (dbg_flag) {                                                                      \
+-                std::cerr << __FILE__ << ":" << __LINE__ << ": " << #x << ":" << x << std::endl; \
++                lbcrypto::RCerr << __FILE__ << ":" << __LINE__ << ": " << #x << ":" << x << std::endl; \
+             }                                                                                    \
+         } while (0)
+ 
+@@ -84,7 +85,7 @@
+     #define OPENFHE_DEBUGHERE()                                                \
+         do {                                                                   \
+             if (dbg_flag) {                                                    \
+-                std::cerr << __FILE__ << ":" << __LINE__ << ": " << std::endl; \
++                lbcrypto::RCerr << __FILE__ << ":" << __LINE__ << ": " << std::endl; \
+             }                                                                  \
+         } while (0)
+ 
+@@ -93,7 +94,7 @@
+         #define PROFILELOG(x)                    \
+             do {                                 \
+                 if (true) {                      \
+-                    std::cout << x << std::endl; \
++                    lbcrypto::RCout << x << std::endl; \
+                 }                                \
+             } while (0)
+ 
+@@ -101,7 +102,7 @@
+         #define PROFILELOGEXP(x)                              \
+             do {                                              \
+                 if (true) {                                   \
+-                    std::cout << #x << ":" << x << std::endl; \
++                    lbcrypto::RCout << #x << ":" << x << std::endl; \
+                 }                                             \
+             } while (0)
+ 
+@@ -109,7 +110,7 @@
+         #define PROFILELOGWHERE(x)                                                                          \
+             do {                                                                                            \
+                 if (true) {                                                                                 \
+-                    std::cout << #x << ":" << x << " at " << __FILE__ << " line " << __LINE__ << std::endl; \
++                    lbcrypto::RCout << #x << ":" << x << " at " << __FILE__ << " line " << __LINE__ << std::endl; \
+                 }                                                                                           \
+             } while (0)
+ 
+@@ -163,7 +164,7 @@
+         #define PROFILELOG(x)                    \
+             do {                                 \
+                 if (true) {                      \
+-                    std::cerr << x << std::endl; \
++                    lbcrypto::RCerr << x << std::endl; \
+                 }                                \
+             } while (0)
+ 
+@@ -171,7 +172,7 @@
+         #define PROFILELOGEXP(x)                              \
+             do {                                              \
+                 if (true) {                                   \
+-                    std::cout << #x << ":" << x << std::endl; \
++                    lbcrypto::RCout << #x << ":" << x << std::endl; \
+                 }                                             \
+             } while (0)
+ 
+@@ -179,7 +180,7 @@
+         #define PROFILELOGWHERE(x)                                                                          \
+             do {                                                                                            \
+                 if (true) {                                                                                 \
+-                    std::cout << #x << ":" << x << " at " << __FILE__ << " line " << __LINE__ LL std::endl; \
++                    lbcrypto::RCout << #x << ":" << x << " at " << __FILE__ << " line " << __LINE__ LL std::endl; \
+                 }                                                                                           \
+             } while (0)
+ 
+diff -ruN a/src/vendor/core/lib/math/dftransform.cpp b/src/vendor/core/lib/math/dftransform.cpp
+--- a/src/vendor/core/lib/math/dftransform.cpp	2026-07-20 13:18:27
++++ b/src/vendor/core/lib/math/dftransform.cpp	2026-07-20 15:33:48
+@@ -1,3 +1,4 @@
++#include "r_shim/r_stream.h"  // openfhe R package patch
+ //==================================================================================
+ // BSD 2-Clause License
+ //
+@@ -114,7 +115,7 @@
+             //  cosTable.resize(l);
+             //  maxMCached = m;
+             // }
+-            // std::cout<<"miss m "<<m<<" != M "<<cachedM[l]<<std::endl;
++            // lbcrypto::RCout<<"miss m "<<m<<" != M "<<cachedM[l]<<std::endl;
+             cachedM[l] = m;
+ 
+             sinTable[l].resize(m / 2);
+diff -ruN a/src/vendor/core/lib/math/distributiongenerator.cpp b/src/vendor/core/lib/math/distributiongenerator.cpp
+--- a/src/vendor/core/lib/math/distributiongenerator.cpp	2026-07-20 13:18:27
++++ b/src/vendor/core/lib/math/distributiongenerator.cpp	2026-07-20 15:33:48
+@@ -1,3 +1,4 @@
++#include "r_shim/r_stream.h"  // openfhe R package patch
+ //==================================================================================
+ // BSD 2-Clause License
+ //
+@@ -61,7 +62,7 @@
+         genPRNGEngine = default_prng::createEngineInstance;
+         if (!genPRNGEngine)
+             OPENFHE_THROW("Cannot find symbol: default_prng::createEngineInstance");
+-        // std::cerr << "InitPRNGEngine: using local PRNG" << std::endl;
++        // lbcrypto::RCerr << "InitPRNGEngine: using local PRNG" << std::endl;
+     }
+     else {
+ #if (defined(__linux__) || defined(__unix__)) && !defined(__APPLE__) && defined(__GNUC__) && !defined(__clang__)
+@@ -83,7 +84,7 @@
+             dlclose(libraryHandle);
+             OPENFHE_THROW(errMsg);
+         }
+-        std::cerr << __FUNCTION__ << ": using external PRNG" << std::endl;
++        lbcrypto::RCerr << __FUNCTION__ << ": using external PRNG" << std::endl;
+ #else
+         OPENFHE_THROW("OpenFHE may use an external PRNG library linked with g++ on Linux only");
+ #endif
+diff -ruN a/src/vendor/core/lib/math/hal/bigintdyn/ubintdyn.cpp b/src/vendor/core/lib/math/hal/bigintdyn/ubintdyn.cpp
+--- a/src/vendor/core/lib/math/hal/bigintdyn/ubintdyn.cpp	2026-07-20 13:18:27
++++ b/src/vendor/core/lib/math/hal/bigintdyn/ubintdyn.cpp	2026-07-20 15:33:48
+@@ -1,3 +1,4 @@
++#include "r_shim/r_stream.h"  // openfhe R package patch
+ //==================================================================================
+ // BSD 2-Clause License
+ //
+@@ -1010,18 +1011,18 @@
+ 
+ template <typename limb_t>
+ void ubint<limb_t>::PrintIntegerConstants() {
+-    std::cout << "sizeof UINT8_C  " << sizeof(UINT8_C(1)) << std::endl;
+-    std::cout << "sizeof UINT16_C " << sizeof(UINT16_C(1)) << std::endl;
+-    std::cout << "sizeof UINT32_C " << sizeof(UINT32_C(1)) << std::endl;
+-    std::cout << "sizeof UINT64_C " << sizeof(UINT64_C(1)) << std::endl;
+-    std::cout << "sizeof uint8_t  " << sizeof(uint8_t) << std::endl;
+-    std::cout << "sizeof uint16_t " << sizeof(uint16_t) << std::endl;
+-    std::cout << "sizeof uint32_t " << sizeof(uint32_t) << std::endl;
+-    std::cout << "sizeof uint64_t " << sizeof(uint64_t) << std::endl;
++    lbcrypto::RCout << "sizeof UINT8_C  " << sizeof(UINT8_C(1)) << std::endl;
++    lbcrypto::RCout << "sizeof UINT16_C " << sizeof(UINT16_C(1)) << std::endl;
++    lbcrypto::RCout << "sizeof UINT32_C " << sizeof(UINT32_C(1)) << std::endl;
++    lbcrypto::RCout << "sizeof UINT64_C " << sizeof(UINT64_C(1)) << std::endl;
++    lbcrypto::RCout << "sizeof uint8_t  " << sizeof(uint8_t) << std::endl;
++    lbcrypto::RCout << "sizeof uint16_t " << sizeof(uint16_t) << std::endl;
++    lbcrypto::RCout << "sizeof uint32_t " << sizeof(uint32_t) << std::endl;
++    lbcrypto::RCout << "sizeof uint64_t " << sizeof(uint64_t) << std::endl;
+     #if defined(HAVE_INT128)
+-    // std::cout << "sizeof UINT128_C "<< sizeof (UINT128_C(1)) << std::endl;
++    // lbcrypto::RCout << "sizeof UINT128_C "<< sizeof (UINT128_C(1)) << std::endl;
+     // dbc commented out  unsupported on some machines
+-    std::cout << "sizeof uint128_t " << sizeof(uint128_t) << std::endl;
++    lbcrypto::RCout << "sizeof uint128_t " << sizeof(uint128_t) << std::endl;
+     #endif
+ }
+ 
+diff -ruN a/src/vendor/core/lib/utils/blockAllocator/xallocator.cpp b/src/vendor/core/lib/utils/blockAllocator/xallocator.cpp
+--- a/src/vendor/core/lib/utils/blockAllocator/xallocator.cpp	2026-07-20 13:18:27
++++ b/src/vendor/core/lib/utils/blockAllocator/xallocator.cpp	2026-07-20 15:33:48
+@@ -1,3 +1,4 @@
++#include "r_shim/r_stream.h"  // openfhe R package patch
+ //==================================================================================
+ // BSD 2-Clause License
+ //
+@@ -372,30 +373,30 @@
+     lock_get();
+     std::unique_lock<std::mutex> lock(xalloc_mutex);
+     {
+-        std::cout << "\n***********************";
++        lbcrypto::RCout << "\n***********************";
+         if (!_allocators.empty()) {
+             auto mode = _allocators.begin()->second->GetMode();
+             if (mode == Allocator::HEAP_BLOCKS)
+-                std::cout << " HEAP_BLOCKS\n";
++                lbcrypto::RCout << " HEAP_BLOCKS\n";
+             if (mode == Allocator::HEAP_POOL)
+-                std::cout << " HEAP_POOL\n";
++                lbcrypto::RCout << " HEAP_POOL\n";
+             if (mode == Allocator::STATIC_POOL)
+-                std::cout << " STATIC_POOL\n";
++                lbcrypto::RCout << " STATIC_POOL\n";
+         }
+ 
+         for (auto& [k, a] : _allocators) {
+             if (a->GetBlockCount() == 0)
+                 continue;
+             if (a->GetName())
+-                std::cout << a->GetName();
+-            std::cout << " Block Size: " << a->GetBlockSize();
+-            std::cout << " Block Count: " << a->GetBlockCount();
+-            std::cout << " Block Allocs: " << a->GetAllocations();
+-            std::cout << " Block Deallocs: " << a->GetDeallocations();
+-            std::cout << " Blocks In Use: " << a->GetBlocksInUse();
+-            std::cout << std::endl;
++                lbcrypto::RCout << a->GetName();
++            lbcrypto::RCout << " Block Size: " << a->GetBlockSize();
++            lbcrypto::RCout << " Block Count: " << a->GetBlockCount();
++            lbcrypto::RCout << " Block Allocs: " << a->GetAllocations();
++            lbcrypto::RCout << " Block Deallocs: " << a->GetDeallocations();
++            lbcrypto::RCout << " Blocks In Use: " << a->GetBlocksInUse();
++            lbcrypto::RCout << std::endl;
+         }
+-        std::cout << "***********************\n";
++        lbcrypto::RCout << "***********************\n";
+     }
+     lock_release();
+ }
+diff -ruN a/src/vendor/core/lib/utils/prng/blake2engine.cpp b/src/vendor/core/lib/utils/prng/blake2engine.cpp
+--- a/src/vendor/core/lib/utils/prng/blake2engine.cpp	2026-07-20 13:18:27
++++ b/src/vendor/core/lib/utils/prng/blake2engine.cpp	2026-07-20 15:33:48
+@@ -1,3 +1,4 @@
++#include "r_shim/r_stream.h"  // openfhe R package patch
+ //==================================================================================
+ // BSD 2-Clause License
+ //
+@@ -67,7 +68,7 @@
+ static void Blake2SeedGenerator(Blake2Engine::blake2_seed_array_t& seed) {
+ #if defined(FIXED_SEED)
+     // Only used for debugging in the single-threaded mode.
+-    std::cerr << "**FOR DEBUGGING ONLY!!!!  Using fixed initializer for PRNG. "
++    lbcrypto::RCerr << "**FOR DEBUGGING ONLY!!!!  Using fixed initializer for PRNG. "
+                  "Use a single thread only, e.g., OMP_NUM_THREADS=1!"
+               << std::endl;
+ 
+diff -ruN a/src/vendor/pke/include/cryptocontext.h b/src/vendor/pke/include/cryptocontext.h
+--- a/src/vendor/pke/include/cryptocontext.h	2026-07-20 13:18:27
++++ b/src/vendor/pke/include/cryptocontext.h	2026-07-20 15:33:48
+@@ -1,3 +1,4 @@
++#include "r_shim/r_stream.h"  // openfhe R package patch
+ //==================================================================================
+ // BSD 2-Clause License
+ //
+@@ -484,7 +485,7 @@
+     * The key can be used for decrypting any intermediate ciphertexts for debugging purposes.
+     */
+     void SetPrivateKey(const PrivateKey<Element> privateKey) {
+-        std::cerr << "Warning - SetPrivateKey is only intended to be used for debugging "
++        lbcrypto::RCerr << "Warning - SetPrivateKey is only intended to be used for debugging "
+                      "purposes - not for production systems."
+                   << std::endl;
+         this->privateKey = privateKey;
+diff -ruN a/src/vendor/pke/lib/scheme/ckksrns/ckksrns-fhe.cpp b/src/vendor/pke/lib/scheme/ckksrns/ckksrns-fhe.cpp
+--- a/src/vendor/pke/lib/scheme/ckksrns/ckksrns-fhe.cpp	2026-07-20 13:18:27
++++ b/src/vendor/pke/lib/scheme/ckksrns/ckksrns-fhe.cpp	2026-07-20 15:33:48
+@@ -1,3 +1,4 @@
++#include "r_shim/r_stream.h"  // openfhe R package patch
+ //==================================================================================
+ // BSD 2-Clause License
+ //
+@@ -130,20 +131,20 @@
+     // Perform some checks on the level budget and compute parameters
+     uint32_t newBudget0 = levelBudget[0];
+     if (newBudget0 > logSlots) {
+-        std::cerr << "\nWarning, the level budget for encoding is too large. Setting it to " << logSlots << std::endl;
++        lbcrypto::RCerr << "\nWarning, the level budget for encoding is too large. Setting it to " << logSlots << std::endl;
+         newBudget0 = logSlots;
+     }
+     if (newBudget0 < 1) {
+-        std::cerr << "\nWarning, the level budget for encoding can not be zero. Setting it to 1" << std::endl;
++        lbcrypto::RCerr << "\nWarning, the level budget for encoding can not be zero. Setting it to 1" << std::endl;
+         newBudget0 = 1;
+     }
+     uint32_t newBudget1 = levelBudget[1];
+     if (newBudget1 > logSlots) {
+-        std::cerr << "\nWarning, the level budget for decoding is too large. Setting it to " << logSlots << std::endl;
++        lbcrypto::RCerr << "\nWarning, the level budget for decoding is too large. Setting it to " << logSlots << std::endl;
+         newBudget1 = logSlots;
+     }
+     if (newBudget1 < 1) {
+-        std::cerr << "\nWarning, the level budget for decoding can not be zero. Setting it to 1" << std::endl;
++        lbcrypto::RCerr << "\nWarning, the level budget for decoding can not be zero. Setting it to 1" << std::endl;
+         newBudget1 = 1;
+     }
+ 
+@@ -602,7 +603,7 @@
+     }
+ 
+ #ifdef BOOTSTRAPTIMING
+-    std::cerr << "\nNumber of levels at the beginning of bootstrapping: "
++    lbcrypto::RCerr << "\nNumber of levels at the beginning of bootstrapping: "
+               << raised->GetElements()[0].GetNumOfElements() - 1 << std::endl;
+ #endif
+ 
+@@ -714,7 +715,7 @@
+ 
+ #ifdef BOOTSTRAPTIMING
+         timeModReduce = TOC(t);
+-        std::cerr << "Approximate modular reduction time: " << timeModReduce / 1000.0 << " s" << std::endl;
++        lbcrypto::RCerr << "Approximate modular reduction time: " << timeModReduce / 1000.0 << " s" << std::endl;
+         // Running SlotToCoeff
+         TIC(t);
+ #endif
+@@ -773,7 +774,7 @@
+ 
+ #ifdef BOOTSTRAPTIMING
+         timeEncode = TOC(t);
+-        std::cerr << "\nEncoding time: " << timeEncode / 1000.0 << " s" << std::endl;
++        lbcrypto::RCerr << "\nEncoding time: " << timeEncode / 1000.0 << " s" << std::endl;
+         // Running Approximate Mod Reduction
+         TIC(t);
+ #endif
+@@ -799,7 +800,7 @@
+ 
+ #ifdef BOOTSTRAPTIMING
+         timeModReduce = TOC(t);
+-        std::cerr << "Approximate modular reduction time: " << timeModReduce / 1000.0 << " s" << std::endl;
++        lbcrypto::RCerr << "Approximate modular reduction time: " << timeModReduce / 1000.0 << " s" << std::endl;
+         // Running SlotToCoeff
+         TIC(t);
+ #endif
+@@ -827,7 +828,7 @@
+ #ifdef BOOTSTRAPTIMING
+     timeDecode = TOC(t);
+ 
+-    std::cout << "Decoding time: " << timeDecode / 1000.0 << " s" << std::endl;
++    lbcrypto::RCout << "Decoding time: " << timeDecode / 1000.0 << " s" << std::endl;
+ #endif
+ 
+     // If we start with more towers, than we obtain from bootstrapping, return the original ciphertext.
+@@ -1050,7 +1051,7 @@
+ #ifdef BOOTSTRAPTIMING
+     timeDecode = TOC(t);
+ 
+-    std::cout << "Decoding time: " << timeDecode / 1000.0 << " s" << std::endl;
++    lbcrypto::RCout << "Decoding time: " << timeDecode / 1000.0 << " s" << std::endl;
+ #endif
+ 
+     //------------------------------------------------------------------------------
+@@ -1108,7 +1109,7 @@
+     }
+ 
+ #ifdef BOOTSTRAPTIMING
+-    std::cerr << "\nNumber of levels after mod raise: " << raised->GetElements()[0].GetNumOfElements() - 1 << std::endl;
++    lbcrypto::RCerr << "\nNumber of levels after mod raise: " << raised->GetElements()[0].GetNumOfElements() - 1 << std::endl;
+ #endif
+     double normalization = pre * (1.0 / (k * N));
+     // Scaling adjustment before Coefficient to Slots
+@@ -1166,7 +1167,7 @@
+ 
+ #ifdef BOOTSTRAPTIMING
+     timeEncode = TOC(t);
+-    std::cerr << "\nEncoding time: " << timeEncode / 1000.0 << " s" << std::endl;
++    lbcrypto::RCerr << "\nEncoding time: " << timeEncode / 1000.0 << " s" << std::endl;
+     // Running Approximate Mod Reduction
+     TIC(t);
+ #endif
+@@ -1207,7 +1208,7 @@
+ 
+ #ifdef BOOTSTRAPTIMING
+     timeModReduce = TOC(t);
+-    std::cerr << "Approximate modular reduction time: " << timeModReduce / 1000.0 << " s" << std::endl;
++    lbcrypto::RCerr << "Approximate modular reduction time: " << timeModReduce / 1000.0 << " s" << std::endl;
+     // Running SlotToCoeff
+     TIC(t);
+ #endif
+@@ -3083,7 +3084,7 @@
+     }
+ 
+ #ifdef BOOTSTRAPTIMING
+-    std::cerr << "\nNumber of levels at the beginning of bootstrapping: "
++    lbcrypto::RCerr << "\nNumber of levels at the beginning of bootstrapping: "
+               << raised->GetElements()[0].GetNumOfElements() - 1 << std::endl;
+ #endif
+ 

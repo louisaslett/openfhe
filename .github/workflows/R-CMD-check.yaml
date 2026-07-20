@@ -1,0 +1,76 @@
+# R CMD check across the CRAN-relevant platform matrix.
+# Based on r-lib/actions check-standard, plus two openfhe-specific gates:
+#  * a scan of the built shared library for std::cout/std::cerr symbols
+#    (verifies the tools/vendor.R iostream shim caught every site), and
+#  * a scan of the check log for R's "Compiled code should not call" NOTE
+#    (covers Windows, where we do not run nm).
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+name: R-CMD-check
+
+permissions: read-all
+
+jobs:
+  R-CMD-check:
+    runs-on: ${{ matrix.config.os }}
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: macos-latest,   r: 'release'}
+          - {os: windows-latest, r: 'release'}
+          - {os: ubuntu-latest,  r: 'devel', http-user-agent: 'release'}
+          - {os: ubuntu-latest,  r: 'release'}
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ matrix.config.r }}
+          http-user-agent: ${{ matrix.config.http-user-agent }}
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck
+          needs: check
+
+      - uses: r-lib/actions/check-r-package@v2
+        with:
+          upload-snapshots: true
+          check-dir: '"check"'
+
+      - name: Scan shared library for forbidden symbols
+        if: runner.os != 'Windows'
+        run: |
+          so=$(find check -name 'openfhe.so' | head -1)
+          if [ -z "$so" ]; then
+            echo '::error::openfhe.so not found in check directory'; exit 1
+          fi
+          echo "Scanning $so"
+          if nm -g "$so" | grep -E '_ZSt4cout|_ZSt4cerr'; then
+            echo '::error::std::cout/std::cerr symbols present in compiled code (iostream shim incomplete)'
+            exit 1
+          fi
+          echo "No forbidden iostream symbols found."
+
+      - name: Scan check log for compiled-code NOTE
+        if: always()
+        shell: bash
+        run: |
+          log=$(find check -name '00check.log' | head -1)
+          if [ -n "$log" ] && grep -q 'Compiled code should not call' "$log"; then
+            echo '::error::R CMD check flagged forbidden entry points in compiled code:'
+            grep -A10 'Compiled code should not call' "$log"
+            exit 1
+          fi
+          echo "No compiled-code entry-point NOTE in check log."
